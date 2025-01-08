@@ -3,7 +3,8 @@ const apiKey = 'XPHMTFBDIR8TS1FU';
 
 // Select DOM elements
 const fetchButton = document.getElementById('fetchButton');
-const symbolInput = document.getElementById('symbol');
+const symbolSelect = document.getElementById('symbolSelect');
+const symbolInput = document.getElementById('symbolInput');
 const stockName = document.getElementById('stockName');
 const price = document.getElementById('price');
 const change = document.getElementById('change');
@@ -14,11 +15,17 @@ let stockChart; // To store the Chart instance
 
 // Event listener for the fetch button
 fetchButton.addEventListener('click', () => {
-    const symbol = symbolInput.value.trim().toUpperCase();
-    if (symbol === '') {
-        alert('Please enter a stock symbol.');
+    let symbol = '';
+
+    if (symbolSelect.value) {
+        symbol = symbolSelect.value;
+    } else if (symbolInput.value.trim() !== '') {
+        symbol = symbolInput.value.trim().toUpperCase();
+    } else {
+        alert('Please select a stock symbol or enter one.');
         return;
     }
+
     fetchStockData(symbol);
 });
 

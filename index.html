@@ -11,7 +11,17 @@
     <div class="container">
         <h1>Stock Market Dashboard</h1>
         <div class="search">
-            <input type="text" id="symbol" placeholder="Enter Stock Symbol (e.g., AAPL)">
+            <select id="symbolSelect">
+                <option value="">-- Select a Stock Symbol --</option>
+                <option value="AAPL">AAPL - Apple Inc.</option>
+                <option value="GOOGL">GOOGL - Alphabet Inc.</option>
+                <option value="MSFT">MSFT - Microsoft Corporation</option>
+                <option value="AMZN">AMZN - Amazon.com, Inc.</option>
+                <option value="TSLA">TSLA - Tesla, Inc.</option>
+                <!-- Add more predefined stock symbols as needed -->
+            </select>
+            <span>OR</span>
+            <input type="text" id="symbolInput" placeholder="Enter Stock Symbol (e.g., AAPL)">
             <button id="fetchButton">Fetch Data</button>
         </div>
         <div class="stock-info">

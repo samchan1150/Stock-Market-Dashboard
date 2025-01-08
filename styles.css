@@ -73,3 +73,47 @@ h1 {
 #stockChart {
     margin-top: 40px;
 }
+
+.search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#symbolSelect, #symbolInput {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#symbolSelect {
+    width: 250px;
+}
+
+#symbolInput {
+    width: 200px;
+    margin: 0 10px;
+}
+
+#fetchButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-left: 10px;
+    border: none;
+    background-color: #3498db;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#fetchButton:hover {
+    background-color: #2980b9;
+}
+
+/* Style the separator */
+.search span {
+    margin: 0 10px;
+    font-weight: bold;
+}
