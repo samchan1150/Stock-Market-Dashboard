@@ -1,0 +1,75 @@
+/* Reset some default styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial, sans-serif';
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+.search {
+    margin-bottom: 20px;
+}
+
+#symbol {
+    padding: 10px;
+    width: 200px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#fetchButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-left: 10px;
+    border: none;
+    background-color: #3498db;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#fetchButton:hover {
+    background-color: #2980b9;
+}
+
+.stock-info {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #ecf0f1;
+    border-radius: 4px;
+}
+
+.stock-info h2 {
+    margin-bottom: 10px;
+    color: #34495e;
+}
+
+.stock-info p {
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+#stockChart {
+    margin-top: 40px;
+}
