@@ -117,3 +117,33 @@ h1 {
     margin: 0 10px;
     font-weight: bold;
 }
+
+/* Add styles for the time range buttons */
+.time-range {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px; /* Space between buttons */
+}
+
+.time-range-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: 1px solid #3498db;
+    background-color: #fff;
+    color: #3498db;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.time-range-btn:hover {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.time-range-btn.active {
+    background-color: #3498db;
+    color: #fff;
+}
