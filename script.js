@@ -11,10 +11,12 @@ const change = document.getElementById('change');
 const changePercent = document.getElementById('changePercent');
 const stockChartCtx = document.getElementById('stockChart').getContext('2d');
 
-// Select all time range buttons
+// Select all time range buttons and the container
 const timeRangeButtons = document.querySelectorAll('.time-range-btn');
+const timeRangeContainer = document.querySelector('.time-range');
 
 let selectedTimeRange = ''; // Variable to store the selected time range
+let currentSymbol = ''; // Variable to store the current stock symbol
 let stockChart; // To store the Chart instance
 
 // Add event listeners to the time range buttons
@@ -26,6 +28,8 @@ timeRangeButtons.forEach(button => {
         button.classList.add('active');
         // Set the selected time range
         selectedTimeRange = button.getAttribute('data-range');
+        // Fetch and update the chart with the new time range
+        fetchStockData(currentSymbol, selectedTimeRange);
     });
 });
 
@@ -42,11 +46,17 @@ fetchButton.addEventListener('click', () => {
         return;
     }
 
-    if (!selectedTimeRange) {
-        alert('Please select a time range.');
-        return;
-    }
+    selectedTimeRange = '30d'; // Default time range on initial fetch
+    // Activate the default time range button (30 Days)
+    timeRangeButtons.forEach(btn => {
+        if (btn.getAttribute('data-range') === selectedTimeRange) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
 
+    currentSymbol = symbol; // Update the current symbol
     fetchStockData(symbol, selectedTimeRange);
 });
 
@@ -156,6 +166,9 @@ function processDailyData(data, symbol, timeRange) {
 
     // Render the chart
     renderChart(dates, prices, symbol, 'Daily');
+
+    // Show the time range buttons after the chart is rendered
+    timeRangeContainer.classList.remove('hidden');
 }
 
 // Function to render the chart using Chart.js
