@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Include Chart.js from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include PapaParse from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -13,12 +15,7 @@
         <div class="search">
             <select id="symbolSelect">
                 <option value="">-- Select a Stock Symbol --</option>
-                <option value="AAPL">AAPL - Apple Inc.</option>
-                <option value="GOOGL">GOOGL - Alphabet Inc.</option>
-                <option value="MSFT">MSFT - Microsoft Corporation</option>
-                <option value="AMZN">AMZN - Amazon.com, Inc.</option>
-                <option value="TSLA">TSLA - Tesla, Inc.</option>
-                <!-- Add more predefined stock symbols as needed -->
+                <!-- Options will be populated dynamically -->
             </select>
             <span>OR</span>
             <input type="text" id="symbolInput" placeholder="Enter Stock Symbol (e.g., AAPL)">

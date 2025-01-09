@@ -19,6 +19,39 @@ let selectedTimeRange = ''; // Variable to store the selected time range
 let currentSymbol = ''; // Variable to store the current stock symbol
 let stockChart; // To store the Chart instance
 
+/**
+ * Fetch and populate stock symbols from CSV
+ */
+function populateStockSymbols() {
+    fetch('stock_symbols.csv') // Ensure the CSV file is in the same directory or provide the correct path
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.text();
+        })
+        .then(csvText => {
+            const parsedData = Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true
+            });
+            const symbols = parsedData.data;
+            symbols.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.symbol;
+                option.textContent = `${item.symbol} - ${item.name}`;
+                symbolSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching stock symbols:', error);
+            alert('Failed to load stock symbols.');
+        });
+}
+
+// Call the function on page load
+document.addEventListener('DOMContentLoaded', populateStockSymbols);
+
 // Add event listeners to the time range buttons
 timeRangeButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -29,7 +62,9 @@ timeRangeButtons.forEach(button => {
         // Set the selected time range
         selectedTimeRange = button.getAttribute('data-range');
         // Fetch and update the chart with the new time range
-        fetchStockData(currentSymbol, selectedTimeRange);
+        if (currentSymbol) {
+            fetchStockData(currentSymbol, selectedTimeRange);
+        }
     });
 });
 
@@ -91,6 +126,7 @@ function fetchStockData(symbol, timeRange) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
+            console.log('API Response:', data); // Log the complete response
             // Handle API errors
             if (data['Error Message']) {
                 alert('Invalid stock symbol. Please try again.');
@@ -108,7 +144,6 @@ function fetchStockData(symbol, timeRange) {
             alert('An error occurred while fetching data. Please try again.');
         });
 }
-
 // Function to process daily data (7d, 30d, 90d, 1y, 3y)
 function processDailyData(data, symbol, timeRange) {
     const metaData = data['Meta Data'];
@@ -157,8 +192,8 @@ function processDailyData(data, symbol, timeRange) {
     const latestData = timeSeries[latestDate];
     const previousDate = dates.length >= 2 ? dates[dates.length - 2] : latestDate;
     const previousData = timeSeries[previousDate];
-    stockName.textContent = `${metaData['2. Symbol']} (${metaData['1. Information']})`;
-    price.textContent = latestData['4. close'];
+    stockName.textContent = `${metaData['2. Symbol']} - ${metaData['1. Information']}`;
+    price.textContent = parseFloat(latestData['4. close']).toFixed(2);
     const changeValue = parseFloat(latestData['4. close']) - parseFloat(previousData['4. close']);
     change.textContent = changeValue.toFixed(2);
     const changePercentValue = (changeValue / parseFloat(previousData['4. close'])) * 100;
