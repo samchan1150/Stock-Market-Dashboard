@@ -8,6 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Include PapaParse from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+    <!-- Include Awesomplete CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -18,9 +21,19 @@
                 <!-- Options will be populated dynamically -->
             </select>
             <span>OR</span>
-            <input type="text" id="symbolInput" placeholder="Enter Stock Symbol (e.g., AAPL)">
+            <input type="text" id="symbolInput" placeholder="Enter Stock Symbol (e.g., AAPL)" class="awesomplete" />
             <button id="fetchButton">Fetch Data</button>
         </div>
+        
+        <!-- Error Message Container -->
+        <div id="errorMessage" class="error-message hidden"></div>
+        
+        <!-- Loading Indicator for CSV -->
+        <div id="loading" class="loading hidden">Loading stock symbols...</div>
+        
+        <!-- Loading Indicator for Data Fetching -->
+        <div id="dataLoading" class="loading hidden">Fetching stock data...</div>
+
         <div class="stock-info">
             <h2 id="stockName">-</h2>
             <p>Price: $<span id="price">-</span></p>

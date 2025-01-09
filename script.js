@@ -10,6 +10,9 @@ const price = document.getElementById('price');
 const change = document.getElementById('change');
 const changePercent = document.getElementById('changePercent');
 const stockChartCtx = document.getElementById('stockChart').getContext('2d');
+const errorMessage = document.getElementById('errorMessage');
+const loadingIndicator = document.getElementById('loading');
+const dataLoadingIndicator = document.getElementById('dataLoading');
 
 // Select all time range buttons and the container
 const timeRangeButtons = document.querySelectorAll('.time-range-btn');
@@ -19,10 +22,45 @@ let selectedTimeRange = ''; // Variable to store the selected time range
 let currentSymbol = ''; // Variable to store the current stock symbol
 let stockChart; // To store the Chart instance
 
+// Throttling parameters
+let lastApiCallTime = 0;
+const apiCooldown = 60000; // 1 minute in milliseconds
+
+/**
+ * Checks if an API call can be made based on cooldown
+ * @returns {boolean} - True if API call is allowed, else false
+ */
+function canMakeApiCall() {
+    const now = Date.now();
+    if (now - lastApiCallTime > apiCooldown) {
+        lastApiCallTime = now;
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Displays an error message in the UI
+ * @param {string} message - The error message to display
+ */
+function displayError(message) {
+    errorMessage.textContent = message;
+    errorMessage.classList.remove('hidden');
+}
+
+/**
+ * Clears any existing error messages from the UI
+ */
+function clearError() {
+    errorMessage.textContent = '';
+    errorMessage.classList.add('hidden');
+}
+
 /**
  * Fetch and populate stock symbols from CSV
  */
 function populateStockSymbols() {
+    loadingIndicator.classList.remove('hidden'); // Show loading
     fetch('stock_symbols.csv') // Ensure the CSV file is in the same directory or provide the correct path
         .then(response => {
             if (!response.ok) {
@@ -31,21 +69,41 @@ function populateStockSymbols() {
             return response.text();
         })
         .then(csvText => {
+            if (!csvText.trim()) {
+                throw new Error('CSV file is empty.');
+            }
             const parsedData = Papa.parse(csvText, {
                 header: true,
                 skipEmptyLines: true
             });
+            if (!parsedData.data.length) {
+                throw new Error('No data found in CSV.');
+            }
             const symbols = parsedData.data;
+            let symbolList = []; // To store symbols for autocomplete
             symbols.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.symbol;
-                option.textContent = `${item.symbol} - ${item.name}`;
-                symbolSelect.appendChild(option);
+                if (item.symbol && item.name) {
+                    const option = document.createElement('option');
+                    option.value = item.symbol;
+                    option.textContent = `${item.symbol} - ${item.name}`;
+                    symbolSelect.appendChild(option);
+                    symbolList.push(item.symbol); // Add to autocomplete list
+                }
             });
+            // Initialize Awesomplete for autocomplete functionality
+            new Awesomplete(symbolInput, {
+                list: symbolList,
+                minChars: 1,
+                maxItems: 10,
+                autoFirst: true
+            });
+
+            loadingIndicator.classList.add('hidden'); // Hide loading
         })
         .catch(error => {
             console.error('Error fetching stock symbols:', error);
-            alert('Failed to load stock symbols.');
+            displayError('Failed to load stock symbols.');
+            loadingIndicator.textContent = 'Failed to load stock symbols.';
         });
 }
 
@@ -70,6 +128,8 @@ timeRangeButtons.forEach(button => {
 
 // Event listener for the fetch button
 fetchButton.addEventListener('click', () => {
+    clearError(); // Clear previous errors
+
     let symbol = '';
 
     if (symbolSelect.value) {
@@ -77,7 +137,12 @@ fetchButton.addEventListener('click', () => {
     } else if (symbolInput.value.trim() !== '') {
         symbol = symbolInput.value.trim().toUpperCase();
     } else {
-        alert('Please select a stock symbol or enter one.');
+        displayError('Please select a stock symbol or enter one.');
+        return;
+    }
+
+    if (!canMakeApiCall()) {
+        displayError('API rate limit exceeded. Please wait a minute before trying again.');
         return;
     }
 
@@ -95,8 +160,20 @@ fetchButton.addEventListener('click', () => {
     fetchStockData(symbol, selectedTimeRange);
 });
 
-// Function to fetch stock data from AlphaVantage
+/**
+ * Fetches stock data from AlphaVantage API with caching
+ * @param {string} symbol - The stock symbol to fetch data for
+ * @param {string} timeRange - The selected time range for data
+ */
 function fetchStockData(symbol, timeRange) {
+    let cacheKey = `${symbol}_${timeRange}`;
+    let cachedData = localStorage.getItem(cacheKey);
+    if (cachedData) {
+        console.log('Using cached data for:', cacheKey);
+        processDailyData(JSON.parse(cachedData), symbol, timeRange);
+        return;
+    }
+
     let url = '';
     let outputSize = 'compact'; // Default output size
 
@@ -117,40 +194,61 @@ function fetchStockData(symbol, timeRange) {
             outputSize = 'full';
             break;
         default:
-            alert('Invalid time range selected.');
+            displayError('Invalid time range selected.');
             return;
     }
 
     url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=${outputSize}&apikey=${apiKey}`;
 
+    dataLoadingIndicator.classList.remove('hidden'); // Show data loading indicator
+
     fetch(url)
         .then(response => response.json())
         .then(data => {
+            dataLoadingIndicator.classList.add('hidden'); // Hide data loading indicator
+
             console.log('API Response:', data); // Log the complete response
+
             // Handle API errors
             if (data['Error Message']) {
-                alert('Invalid stock symbol. Please try again.');
+                displayError('Invalid stock symbol. Please try again.');
                 return;
             }
             if (data['Note']) {
-                alert('API Call Limit Reached. Please wait and try again later.');
+                displayError('API Call Limit Reached. Please wait and try again later.');
                 return;
             }
+
+            // Check if 'Time Series (Daily)' exists
+            if (!data['Time Series (Daily)']) {
+                displayError('Daily data not available for the selected symbol.');
+                return;
+            }
+
+            // Cache the data
+            localStorage.setItem(cacheKey, JSON.stringify(data));
 
             processDailyData(data, symbol, timeRange);
         })
         .catch(error => {
+            dataLoadingIndicator.classList.add('hidden'); // Hide data loading indicator
             console.error('Error fetching data:', error);
-            alert('An error occurred while fetching data. Please try again.');
+            displayError('An error occurred while fetching data. Please try again.');
         });
 }
-// Function to process daily data (7d, 30d, 90d, 1y, 3y)
+
+/**
+ * Processes the fetched daily stock data
+ * @param {object} data - The API response data
+ * @param {string} symbol - The stock symbol
+ * @param {string} timeRange - The selected time range for data
+ */
 function processDailyData(data, symbol, timeRange) {
     const metaData = data['Meta Data'];
     const timeSeries = data['Time Series (Daily)'];
 
     if (!timeSeries) {
-        alert('Daily data not available for the selected symbol.');
+        displayError('Daily data not available for the selected symbol.');
         return;
     }
 
@@ -170,10 +268,10 @@ function processDailyData(data, symbol, timeRange) {
             days = 90;
             break;
         case '1y':
-            days = 252; // Approximate trading days in a year
+            days = 365;
             break;
         case '3y':
-            days = 756; // Approximate trading days in three years
+            days = 1095;
             break;
         default:
             days = 30;
@@ -192,7 +290,13 @@ function processDailyData(data, symbol, timeRange) {
     const latestData = timeSeries[latestDate];
     const previousDate = dates.length >= 2 ? dates[dates.length - 2] : latestDate;
     const previousData = timeSeries[previousDate];
-    stockName.textContent = `${metaData['2. Symbol']} - ${metaData['1. Information']}`;
+
+    // Retrieve the company name from the dropdown options
+    const selectedOption = symbolSelect.querySelector(`option[value="${symbol}"]`);
+    const companyName = selectedOption ? selectedOption.textContent.split(' - ')[1] : 'Unknown Company';
+
+    stockName.textContent = `${symbol} - ${companyName}`;
+
     price.textContent = parseFloat(latestData['4. close']).toFixed(2);
     const changeValue = parseFloat(latestData['4. close']) - parseFloat(previousData['4. close']);
     change.textContent = changeValue.toFixed(2);
@@ -206,7 +310,13 @@ function processDailyData(data, symbol, timeRange) {
     timeRangeContainer.classList.remove('hidden');
 }
 
-// Function to render the chart using Chart.js
+/**
+ * Renders the stock price chart using Chart.js
+ * @param {array} dates - Array of dates
+ * @param {array} prices - Array of closing prices
+ * @param {string} symbol - The stock symbol
+ * @param {string} dataType - Type of data (e.g., 'Daily')
+ */
 function renderChart(dates, prices, symbol, dataType) {
     // If a chart instance exists, destroy it before creating a new one
     if (stockChart) {

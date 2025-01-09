@@ -164,3 +164,22 @@ h1 {
     background-color: #3498db;
     color: #fff;
 }
+
+/* Style for error messages */
+.error-message {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24;           /* Dark red text */
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Style for loading indicator */
+.loading {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #555;
+    font-weight: bold;
+}
