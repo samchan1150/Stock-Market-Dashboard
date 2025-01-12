@@ -1,4 +1,31 @@
-/* Reset some default styles */
+/* ------------------------------
+   1. CSS Variables for Theming
+-------------------------------- */
+:root {
+    /* Primary Colors */
+    --primary-color: #3498db;
+    --primary-hover: #2980b9;
+    --secondary-color: #2c3e50;
+    --background-color: #121212;
+    --container-bg: #1e1e1e;
+    --text-color: #ecf0f1;
+    --muted-text: #7f8c8d;
+    --error-bg: #f8d7da;
+    --error-text: #721c24;
+    --success-bg: #d4edda;
+    --success-text: #155724;
+    
+    /* Border and Shadow */
+    --border-color: #34495e;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    
+    /* Font Families */
+    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ------------------------------
+   2. Global Styles
+-------------------------------- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -6,180 +33,222 @@
 }
 
 body {
-    font-family: 'Arial, sans-serif';
-    background-color: #f0f2f5;
-    color: #333;
+    font-family: var(--font-primary);
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
-.container {
-    max-width: 900px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+a {
+    color: var(--primary-color);
+    text-decoration: none;
 }
 
-h1 {
-    margin-bottom: 30px;
-    color: #2c3e50;
-}
-
-.search {
-    margin-bottom: 20px;
-}
-
-#symbol {
-    padding: 10px;
-    width: 200px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-#fetchButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin-left: 10px;
-    border: none;
-    background-color: #3498db;
-    color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-#fetchButton:hover {
-    background-color: #2980b9;
-}
-
-.stock-info {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #ecf0f1;
-    border-radius: 4px;
-}
-
-.stock-info h2 {
-    margin-bottom: 10px;
-    color: #34495e;
-}
-
-.stock-info p {
-    font-size: 18px;
-    margin: 5px 0;
-}
-
-#stockChart {
-    margin-top: 40px;
-}
-
-.search {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-#symbolSelect, #symbolInput {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-#symbolSelect {
-    width: 250px;
-}
-
-#symbolInput {
-    width: 200px;
-    margin: 0 10px;
-}
-
-#fetchButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin-left: 10px;
-    border: none;
-    background-color: #3498db;
-    color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-#fetchButton:hover {
-    background-color: #2980b9;
-}
-
-/* Style the separator */
-.search span {
-    margin: 0 10px;
-    font-weight: bold;
+a:hover {
+    text-decoration: underline;
 }
 
 .hidden {
     display: none;
 }
 
+/* ------------------------------
+   3. Container
+-------------------------------- */
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 30px 20px;
+    background-color: var(--container-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    text-align: center;
+}
 
-/* Add styles for the time range buttons */
+/* ------------------------------
+   4. Headings
+-------------------------------- */
+h1 {
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    font-size: 2.5em;
+}
+
+h2 {
+    margin-bottom: 10px;
+    color: var(--text-color);
+    font-size: 1.8em;
+}
+
+/* ------------------------------
+   5. Search Section
+-------------------------------- */
+.search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+#symbolSelect, 
+#symbolInput {
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: #2c3e50;
+    color: var(--text-color);
+    width: 250px;
+}
+
+#symbolSelect:focus, 
+#symbolInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px var(--primary-color);
+}
+
+/* Separator */
+.search span {
+    font-weight: 600;
+    color: var(--muted-text);
+    font-size: 1em;
+}
+
+/* Fetch Button */
+#fetchButton {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#fetchButton:hover {
+    background-color: var(--primary-hover);
+}
+
+#fetchButton:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+/* ------------------------------
+   6. Stock Information
+-------------------------------- */
+.stock-info {
+    margin: 20px;
+    padding: 25px;
+    background-color: #2c3e50;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.stock-info p {
+    font-size: 1.2em;
+    margin: 8px 0;
+    color: var(--text-color);
+}
+
+.stock-info p span {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* ------------------------------
+   7. Time Range Buttons
+-------------------------------- */
 .time-range {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 20px;
-    gap: 10px; /* Space between buttons */
 }
 
 .time-range-btn {
-    padding: 8px 16px;
+    padding: 10px 20px;
     font-size: 14px;
-    border: 1px solid #3498db;
-    background-color: #fff;
-    color: #3498db;
-    border-radius: 4px;
+    border: 1px solid var(--primary-color);
+    background-color: transparent;
+    color: var(--primary-color);
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-
-.time-range-btn:first-child {
-    border-left: 1px solid #3498db; /* Add left border to the first button */
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-}
-
-.time-range-btn:last-child {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
+    transition: all 0.3s;
 }
 
 .time-range-btn:hover {
-    background-color: #3498db;
+    background-color: var(--primary-color);
     color: #fff;
 }
 
 .time-range-btn.active {
-    background-color: #3498db;
+    background-color: var(--primary-color);
     color: #fff;
+    border-color: var(--primary-color);
 }
 
-/* Style for error messages */
+/* ------------------------------
+   8. Chart Canvas
+-------------------------------- */
+#stockChart {
+    margin-top: 40px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+/* ------------------------------
+   9. Error and Loading Messages
+-------------------------------- */
 .error-message {
     margin-top: 20px;
-    padding: 10px;
-    background-color: #f8d7da; /* Light red background */
-    color: #721c24;           /* Dark red text */
+    padding: 15px;
+    background-color: var(--error-bg);
+    color: var(--error-text);
     border: 1px solid #f5c6cb;
-    border-radius: 4px;
+    border-radius: 6px;
+    font-size: 1em;
     font-weight: bold;
 }
 
-/* Style for loading indicator */
+.success-message {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid #c3e6cb;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: bold;
+}
+
 .loading {
     margin-top: 20px;
     font-size: 1.2em;
-    color: #555;
+    color: var(--muted-text);
     font-weight: bold;
+}
+
+/* ------------------------------
+   10. Responsive Design
+-------------------------------- */
+@media (max-width: 600px) {
+    .search {
+        flex-direction: column;
+    }
+    
+    #symbolSelect, 
+    #symbolInput {
+        width: 100%;
+    }
+    
+    .time-range-btn {
+        width: 100%;
+    }
 }
